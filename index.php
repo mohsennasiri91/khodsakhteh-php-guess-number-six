@@ -83,7 +83,7 @@ include_once './includes/head.php' ?>
                 <button>شروع مجدد</button>
             </form>';
         } else {
-            echo $number . '<p class="text-center">یک عدد بین ۶ رقمی حدس بزن</p>
+            echo '<p class="text-center">یک عدد بین ۶ رقمی حدس بزن</p>
         <form method="post">
             <input type="text" minlength="6" maxlength="6" name="guess" placeholder="عدد را وارد کنید" required>
             <button type="submit">حدس بزن</button>
