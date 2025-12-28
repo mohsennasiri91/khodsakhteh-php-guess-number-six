@@ -1,0 +1,101 @@
+<?php
+include './includes/check-game-is-started.php';
+include './includes/functions.php';
+$message = '';
+$game_ended = false;
+$success = false;
+$number = $_SESSION['number'];
+if (isset($_POST["guess"]) && !empty($_POST['guess'])) {
+    $guess = $_POST["guess"];
+    $_SESSION['guesses'][] = $guess;
+    $_SESSION['hearts']--;
+    if ($guess == $number) {
+        $game_ended = true;
+        $success = true;
+        $message = '<div class="result success text-center">
+            🎉 تبریک! حدست درست بود
+            <br>
+            تو بازی رو بردی
+            <br>
+             بازم بزنیم؟
+        </div> ';
+    } else if ($guess > $number) {
+        $message = '<div class="result error text-center">
+        ❌ حدست اشتباه بود، دوباره تلاش کن
+        <br>
+        راهنمایی میکنم، بیا پایین‌تر ⬇
+    </div>';
+    } else if ($guess < $number) {
+        $message = '<div class="result error text-center">
+        ❌ حدست اشتباه بود، دوباره تلاش کن
+        <br>
+        راهنمایی میکنم، برو بالاتر ⬆
+    </div>';
+    }
+}
+$hearts = $_SESSION['hearts'];
+$guesses = $_SESSION['guesses'];
+
+if ($game_ended == false && $hearts < 1) {
+    $game_ended = true;
+    $message = '<div class="result error text-center">
+        ❌ متاسفانه جونات تموم شد و نتونستی حدس بزنی
+        <br>
+        عدد درست ' . $number . ' بود. 
+        <br> 
+        دوباره بازی میکنی؟
+    </div>';
+}
+
+?>
+<?php
+//////////////html start//////////////////
+include_once './includes/head.php' ?>
+
+<body>
+
+    <div class="game-container transparent-9">
+
+        <?php
+        $last = count($guesses) - 1;
+        if ($last >= 0) {
+
+            $first = $last - 2;
+            if ($first < 0) $first++;
+            if ($first < 0) $first++;
+
+            for ($i = $first; $i <= $last; $i++) {
+                $g = $guesses[$i];
+                echo '<h1 class="answer">';
+                for ($j = 0; $j < strlen($g); $j++) {
+                    $span_class = "wrong";
+                    if ($g[$j] == $number[$j])
+                        $span_class = "correct";
+                    echo '<span class = ' . $span_class . '>' . $g[$j] . '</span>';
+                }
+                echo '</h1><hr>';
+            }
+        }
+        if ($game_ended) {
+            setGameOptions(false, 0, 0);
+            echo $message . '<br><form action="./start-game.php" method="post">
+                <input type="hidden" name="game" value="start">
+                <button>شروع مجدد</button>
+            </form>';
+        } else {
+            echo $number . '<p class="text-center">یک عدد بین ۶ رقمی حدس بزن</p>
+        <form method="post">
+            <input type="text" minlength="6" maxlength="6" name="guess" placeholder="عدد را وارد کنید" required>
+            <button type="submit">حدس بزن</button>
+        </form>' . $message . '<br><form class="flex-small" action="./start-game.php" method="post">
+            <input type="hidden" name="game" value="stop">
+            <button class="btn-danger">تسلیم 🏳</button>
+        </form>';
+        }
+        ?>
+    </div>
+    <?php include_once './includes/floats.php' ?>
+
+</body>
+
+</html>
